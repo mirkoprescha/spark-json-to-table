@@ -23,11 +23,11 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
       review_count=  5,
       is_open=  1,
       attributes= Array("1","2","3","4"),
-      categories=  Array("a","b","c","d"),
+      categories=  Array("a","d","c","b"),
       hours=  Array("x","y","z"),
       `type`=  "myType"
-    ))
-  )
+    )
+  ))
 
   "Business Class " must   "be converted in a Business Table" in {
     val df = spark.read.json("/data/home/mprescha/git/spark-json-to-table/src/test/resources/business.json")
@@ -45,7 +45,7 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
 
     println (underTest.head().attributes)
     underTest.head().attributes must be ("1,2,3,4")
-    underTest.head().categories must be ("a,b,c,d")
+    underTest.head().categories must be ("a,d,c,b")
     underTest.head().hours must be ("x,y,z")
   }
 
@@ -74,4 +74,33 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
     underTest.head().`type` must be ("myType")
   }
 
+  "Attribute-Array in Business Class " must "be exploded into several rows" in {
+    val underTest = new Json2TableTransformer().businessAttributes(businesses).sort($"business_id",$"attribute")
+    underTest.show(false)
+    underTest.count() must be (4)
+    underTest.head(4)(0) must be (BusinessAttributes("1","1"))
+    underTest.head(4)(1) must be (BusinessAttributes("1","2"))
+    underTest.head(4)(2) must be (BusinessAttributes("1","3"))
+    underTest.head(4)(3) must be (BusinessAttributes("1","4"))
+  }
+
+
+  "Categorie-Array in Business Class " must "be exploded into several rows" in {
+    val underTest = new Json2TableTransformer().businessCategories(businesses).sort($"business_id",$"categorie")
+    underTest.show(false)
+    underTest.count() must be (4)
+    underTest.head(4)(0) must be (BusinessCategories("1","a"))
+    underTest.head(4)(1) must be (BusinessCategories("1","b"))
+    underTest.head(4)(2) must be (BusinessCategories("1","c"))
+    underTest.head(4)(3) must be (BusinessCategories("1","d"))
+  }
+
+  "Hours-Array in Business Class " must "be exploded into several rows" in {
+    val underTest = new Json2TableTransformer().businessHours(businesses).sort($"business_id",$"hours")
+    underTest.show(false)
+    underTest.count() must be (3)
+    underTest.head(4)(0) must be (BusinessHours("1","x"))
+    underTest.head(4)(1) must be (BusinessHours("1","y"))
+    underTest.head(4)(2) must be (BusinessHours("1","z"))
+  }
 }

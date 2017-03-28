@@ -41,3 +41,16 @@ case class BusinessTable (
   `type`: String
 )
 
+case class BusinessAttributes (
+                                business_id: String,
+                                attribute: String
+)
+
+case class BusinessCategories (
+                                business_id: String,
+                                categorie: String
+                              )
+case class BusinessHours (
+                                business_id: String,
+                                hour: String
+                              )
