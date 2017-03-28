@@ -29,13 +29,27 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
     )
   ))
 
-  "Business Class " must   "be converted in a Business Table" in {
-    val df = spark.read.json("/data/home/mprescha/git/spark-json-to-table/src/test/resources/business.json")
-    df.printSchema()
-    df.show(false)
-  }
+  val checkin: Dataset[Checkin] = spark.createDataset(List(
+    Checkin(
+      business_id = "1",
+      time =  Array("Wed-0:1","Tue-21:1","Sat-23:1"),
+      `type`=  "myType"
+    ),
+    Checkin(
+      business_id = "2",
+      time =  Array("Tue","Sun"),
+      `type`=  "checkin"
+    )
+  ))
 
-  "Arrays of Business Class " must   "be converted in String" in {
+
+//  "Business Class " must   "be converted in a Business Table" in {
+//    val df = spark.read.json("/data/home/mprescha/git/spark-json-to-table/src/test/resources/business.json")
+//    df.printSchema()
+//    df.show(false)
+//  }
+
+  "Arrays of Business Class " must   "be converted in comma separated String" in {
     println ("schema of business raw data based on json:")
     businesses.printSchema()
     println("input business raw data:")
@@ -96,11 +110,49 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
   }
 
   "Hours-Array in Business Class " must "be exploded into several rows" in {
-    val underTest = new Json2TableTransformer().businessHours(businesses).sort($"business_id",$"hours")
+    val underTest = new Json2TableTransformer().businessHours(businesses).sort($"business_id",$"hour")
     underTest.show(false)
     underTest.count() must be (3)
     underTest.head(4)(0) must be (BusinessHours("1","x"))
     underTest.head(4)(1) must be (BusinessHours("1","y"))
     underTest.head(4)(2) must be (BusinessHours("1","z"))
+  }
+
+  /*
+    checkin
+   */
+
+  "Values of time-Array in Checkin Class " must   "be converted into a comma separated String" in {
+    println("input checkin raw data:")
+    checkin.show(false)
+
+    val underTest  = new Json2TableTransformer().checkinAsTable(checkin).sort($"business_id",$"time")
+    println("transformed checkin relational data:")
+    underTest.show(false)
+    underTest.count() must be (2)
+    underTest.head(2)(0).business_id must be ("1")
+    underTest.head(2)(0).`type` must be ("myType")
+    underTest.head(2)(0).time must be ("Wed-0:1,Tue-21:1,Sat-23:1")
+
+    underTest.head(2)(1).business_id must be ("2")
+    underTest.head(2)(1).time must be ("Tue,Sun")
+
+  }
+
+  "Values of time-Array in Checkin Class " must   "be exploded into several rows" in {
+    println("input checkin raw data:")
+    checkin.show(false)
+
+    val underTest  = new Json2TableTransformer().checkinTimes(checkin).sort($"business_id",$"time")
+    println("transformed checkin relational data:")
+    underTest.show(false)
+    underTest.count() must be (5)
+    underTest.head(5)(0) must be (CheckinTimes("1","Sat-23:1"))
+    underTest.head(5)(1) must be (CheckinTimes("1","Tue-21:1"))
+    underTest.head(5)(2) must be (CheckinTimes("1","Wed-0:1"))
+    underTest.head(5)(3) must be (CheckinTimes("2","Sun"))
+    underTest.head(5)(4) must be (CheckinTimes("2","Tue"))
+
+
   }
 }

@@ -50,4 +50,26 @@ class Json2TableTransformer {
     return ds
   }
 
+  /*
+    CHECKIN
+   */
+  def checkinAsTable(checkin:Dataset[Checkin])(implicit spark:SparkSession) : Dataset[CheckinTable] = {
+    import spark.implicits._
+    val ds = checkin.map (x => CheckinTable(
+      business_id = x.business_id,
+      time =  x.time.mkString(","),
+      `type`=  x.`type`
+    ))
+    return ds
+  }
+
+  def checkinTimes(checkin:Dataset[Checkin])(implicit spark:SparkSession) : Dataset[CheckinTimes] = {
+    import spark.implicits._
+    val ds  = checkin
+      .select( $"business_id".as[String], $"time".as[Array[String]])
+//      .withColumnRenamed("time","times")
+      .withColumn("time", org.apache.spark.sql.functions.explode(checkin.col("time")))/*.drop("times")*/.as[CheckinTimes]
+    return ds
+  }
+
 }
