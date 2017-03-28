@@ -1,3 +1,5 @@
+package com.mprescha.json2Table
+
 /**
   * Created by mprescha on 28.03.17.
   */

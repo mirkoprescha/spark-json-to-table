@@ -1,4 +1,8 @@
+package com.mprescha.json2Table
+
 import org.apache.spark.sql.{Dataset, SparkSession}
+
+
 /**
   * Created by mprescha on 28.03.17.
   */

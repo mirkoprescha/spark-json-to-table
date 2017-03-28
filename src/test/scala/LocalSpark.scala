@@ -1,3 +1,5 @@
+package com.mprescha.json2Table
+
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.scalatest.{Suite, BeforeAndAfterAll}

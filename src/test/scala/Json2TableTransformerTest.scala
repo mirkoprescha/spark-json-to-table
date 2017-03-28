@@ -1,3 +1,5 @@
+package com.mprescha.json2Table
+
 import org.apache.spark.sql.Dataset
 import org.scalatest.{FlatSpec, MustMatchers}
 
