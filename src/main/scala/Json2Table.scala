@@ -30,10 +30,35 @@ object Json2Table {
     println ("schema of business validated")
 
     val result = new Json2TableTransformer().businessAsTable(ds)
-    println (s"Converted ${result.count()} rows into table") //TODO: remove in production
+    println (s"Converted ${result.count()} rows into table") //TODO: remove count in production
 
     val outputPathBusinessTable=outputPath + "/businessAsTable"
     result.toDF().write.mode(SaveMode.Overwrite).parquet(outputPathBusinessTable)
     println (s"Written output to $outputPathBusinessTable")
+
+    new Json2TableTransformer().businessAttributes(ds).write.mode(SaveMode.Overwrite).parquet(outputPath + "/businessAttributes")
+    new Json2TableTransformer().businessCategories(ds).write.mode(SaveMode.Overwrite).parquet(outputPath + "/businessCategories")
+    new Json2TableTransformer().businessHours(ds).write.mode(SaveMode.Overwrite).parquet(outputPath + "/businessHours")
+
+  }
+
+  def transformCheckinToTables (inputFilename: String, outputPath: String)(implicit spark:SparkSession) = {
+    import spark.implicits._
+    val df = spark.read.json(inputFilename)
+    println (s"Reading ${df.count()} rows from source file $inputFilename")
+
+    val ds = df.as[Checkin]
+    println ("schema of Checkin validated")
+
+    val result = new Json2TableTransformer().checkinAsTable(ds)
+    println (s"Converted ${result.count()} rows into table") //TODO: remove count in production
+
+    val outputPathCheckinTable=outputPath + "/checkinAsTable"
+    result.toDF().write.mode(SaveMode.Overwrite).parquet(outputPathCheckinTable)
+    println (s"Written output to $outputPathCheckinTable")
+
+    new Json2TableTransformer().checkinTimes(ds).write.mode(SaveMode.Overwrite).parquet(outputPath + "/checkinTimes")
+
+
   }
 }
