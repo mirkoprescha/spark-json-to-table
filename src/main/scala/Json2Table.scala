@@ -32,7 +32,8 @@ object Json2Table {
     val result = new Json2TableTransformer().businessAsTable(ds)
     println (s"Converted ${result.count()} rows into table") //TODO: remove in production
 
-    result.toDF().write.mode(SaveMode.Overwrite).json(outputPath + "/businessAsTable")
-
+    val outputPathBusinessTable=outputPath + "/businessAsTable"
+    result.toDF().write.mode(SaveMode.Overwrite).parquet(outputPathBusinessTable)
+    println (s"Written output to $outputPathBusinessTable")
   }
 }
