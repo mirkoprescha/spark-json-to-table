@@ -45,11 +45,7 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
   ))
 
 
-//  "Business Class " must   "be converted in a Business Table" in {
-//    val df = spark.read.json("/data/home/mprescha/git/spark-json-to-table/src/test/resources/business.json")
-//    df.printSchema()
-//    df.show(false)
-//  }
+
 
   "Arrays of Business Class " must   "be converted in comma separated String" in {
     println ("schema of business raw data based on json:")
@@ -99,6 +95,8 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
     underTest.head(4)(2) must be (BusinessAttributes("1","3"))
     underTest.head(4)(3) must be (BusinessAttributes("1","4"))
   }
+
+
 
 
   "Categorie-Array in Business Class " must "be exploded into several rows" in {
@@ -154,7 +152,56 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
     underTest.head(5)(2) must be (CheckinTimes("1","Wed-0:1"))
     underTest.head(5)(3) must be (CheckinTimes("2","Sun"))
     underTest.head(5)(4) must be (CheckinTimes("2","Tue"))
+  }
+
+  "Attribute-Array without values " must "be converted into empty string" in {
+
+    val checkin_empty: Dataset[Checkin] = spark.createDataset(List(
+      Checkin(
+        business_id = "1",
+        time =  Array("Wed-0:1","Tue-21:1","Sat-23:1"),
+        `type`=  "myType"
+      ),
+      Checkin(
+        business_id = "2",
+        time =  null,
+        `type`=  "checkin"
+      )
+    ))
+
+    checkin_empty.show(false)
+    val underTest = new Json2TableTransformer().checkinAsTable(checkin_empty).sort($"business_id",$"time")
+    underTest.show(false)
+    underTest.count() must be (2)
+    //    underTest.head(4)(0) must be (BusinessAttributes("1","1"))
+    //    underTest.head(4)(1) must be (BusinessAttributes("1","2"))
+    //    underTest.head(4)(2) must be (BusinessAttributes("1","3"))
+    //    underTest.head(4)(3) must be (BusinessAttributes("1","4"))
+  }
 
 
+  "Attribute-Array without values " must "be not be exploded" in {
+
+    val checkin_empty: Dataset[Checkin] = spark.createDataset(List(
+      Checkin(
+        business_id = "1",
+        time =  Array("Wed-0:1","Tue-21:1","Sat-23:1"),
+        `type`=  "myType"
+      ),
+      Checkin(
+        business_id = "2",
+        time =  null,
+        `type`=  "checkin"
+      )
+    ))
+
+
+    val underTest = new Json2TableTransformer().checkinAsTable(checkin_empty).sort($"business_id",$"time")
+    underTest.show(false)
+    underTest.count() must be (2)
+    //    underTest.head(4)(0) must be (BusinessAttributes("1","1"))
+    //    underTest.head(4)(1) must be (BusinessAttributes("1","2"))
+    //    underTest.head(4)(2) must be (BusinessAttributes("1","3"))
+    //    underTest.head(4)(3) must be (BusinessAttributes("1","4"))
   }
 }

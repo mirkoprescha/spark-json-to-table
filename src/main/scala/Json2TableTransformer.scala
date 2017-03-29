@@ -7,6 +7,22 @@ import org.apache.spark.sql.{Dataset, SparkSession}
   * Created by mprescha on 28.03.17.
   */
 class Json2TableTransformer {
+//  def arrayAsString (array: Array[String]) : String = {
+//    if(!array.isEmpty)
+//      array.mkString(",")
+//    else
+//      ""
+//  }
+
+
+//
+//  val arrayAsString = (array: Array[String])  => {
+//    if(!array.isEmpty)
+//      array.mkString(",")
+//    else
+//      ""
+//  }
+
   def businessAsTable(businessRaw:Dataset[Business])(implicit spark:SparkSession) : Dataset[BusinessTable] = {
     import spark.implicits._
     val ds: Dataset[BusinessTable] = businessRaw.map (b => BusinessTable(
@@ -61,7 +77,7 @@ class Json2TableTransformer {
     import spark.implicits._
     val ds = checkin.map (x => CheckinTable(
       business_id = x.business_id,
-      time =  x.time.mkString(","),
+      time = ArrayConverter.arrayAsString(x.time),
       `type`=  x.`type`
     ))
     return ds
@@ -75,5 +91,6 @@ class Json2TableTransformer {
       .withColumn("time", org.apache.spark.sql.functions.explode(checkin.col("time")))/*.drop("times")*/.as[CheckinTimes]
     return ds
   }
+
 
 }

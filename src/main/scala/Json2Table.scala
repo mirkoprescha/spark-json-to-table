@@ -30,7 +30,7 @@ object Json2Table {
     println ("schema of business validated")
 
     val result = new Json2TableTransformer().businessAsTable(ds)
-    println (s"Converted ${result.count()} rows into table")
+    println (s"Converted ${result.count()} rows into table") //TODO: remove in production
 
     result.toDF().write.mode(SaveMode.Overwrite).json(outputPath + "/businessAsTable")
 
