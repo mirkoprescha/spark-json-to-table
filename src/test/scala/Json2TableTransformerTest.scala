@@ -44,7 +44,18 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
     )
   ))
 
-
+  val checkin_empty: Dataset[Checkin] = spark.createDataset(List(
+    Checkin(
+      business_id = "1",
+      time =  Array("Wed-0:1","Tue-21:1","Sat-23:1"),
+      `type`=  "myType"
+    ),
+    Checkin(
+      business_id = "2",
+      time =  null,
+      `type`=  "checkin"
+    )
+  ))
 
 
   "Arrays of Business Class " must   "be converted in comma separated String" in {
@@ -156,52 +167,24 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
 
   "Attribute-Array without values " must "be converted into empty string" in {
 
-    val checkin_empty: Dataset[Checkin] = spark.createDataset(List(
-      Checkin(
-        business_id = "1",
-        time =  Array("Wed-0:1","Tue-21:1","Sat-23:1"),
-        `type`=  "myType"
-      ),
-      Checkin(
-        business_id = "2",
-        time =  null,
-        `type`=  "checkin"
-      )
-    ))
 
     checkin_empty.show(false)
     val underTest = new Json2TableTransformer().checkinAsTable(checkin_empty).sort($"business_id",$"time")
     underTest.show(false)
     underTest.count() must be (2)
-    //    underTest.head(4)(0) must be (BusinessAttributes("1","1"))
-    //    underTest.head(4)(1) must be (BusinessAttributes("1","2"))
-    //    underTest.head(4)(2) must be (BusinessAttributes("1","3"))
-    //    underTest.head(4)(3) must be (BusinessAttributes("1","4"))
+    underTest.head(2)(0).time must be ("Wed-0:1,Tue-21:1,Sat-23:1")
+    underTest.head(2)(1).time must be ("")
   }
 
 
   "Attribute-Array without values " must "be not be exploded" in {
 
-    val checkin_empty: Dataset[Checkin] = spark.createDataset(List(
-      Checkin(
-        business_id = "1",
-        time =  Array("Wed-0:1","Tue-21:1","Sat-23:1"),
-        `type`=  "myType"
-      ),
-      Checkin(
-        business_id = "2",
-        time =  null,
-        `type`=  "checkin"
-      )
-    ))
-
-
-    val underTest = new Json2TableTransformer().checkinAsTable(checkin_empty).sort($"business_id",$"time")
+    val underTest = new Json2TableTransformer().checkinTimes(checkin_empty).sort($"business_id",$"time")
     underTest.show(false)
-    underTest.count() must be (2)
-    //    underTest.head(4)(0) must be (BusinessAttributes("1","1"))
-    //    underTest.head(4)(1) must be (BusinessAttributes("1","2"))
-    //    underTest.head(4)(2) must be (BusinessAttributes("1","3"))
-    //    underTest.head(4)(3) must be (BusinessAttributes("1","4"))
+    underTest.count() must be (3)
+    underTest.head(5)(0) must be (CheckinTimes("1","Sat-23:1"))
+    underTest.head(5)(1) must be (CheckinTimes("1","Tue-21:1"))
+    underTest.head(5)(2) must be (CheckinTimes("1","Wed-0:1"))
+
   }
 }
