@@ -7,21 +7,6 @@ import org.apache.spark.sql.{Dataset, SparkSession}
   * Created by mprescha on 28.03.17.
   */
 class Json2TableTransformer {
-//  def arrayAsString (array: Array[String]) : String = {
-//    if(!array.isEmpty)
-//      array.mkString(",")
-//    else
-//      ""
-//  }
-
-
-//
-//  val arrayAsString = (array: Array[String])  => {
-//    if(!array.isEmpty)
-//      array.mkString(",")
-//    else
-//      ""
-//  }
 
   def businessAsTable(businessRaw:Dataset[Business])(implicit spark:SparkSession) : Dataset[BusinessTable] = {
     import spark.implicits._
@@ -38,9 +23,9 @@ class Json2TableTransformer {
       stars=  b.stars,
       review_count=  b.review_count,
       is_open=  b.is_open,
-      attributes= b.attributes.mkString(","),
-      categories=  b.categories.mkString(","),
-      hours=  b.hours.mkString(","),
+      attributes= ArrayConverter.arrayAsString(b.attributes),
+      categories=  ArrayConverter.arrayAsString(b.categories) ,
+      hours=  ArrayConverter.arrayAsString(b.hours),
       `type`=  b.`type`
     ))
     return ds
