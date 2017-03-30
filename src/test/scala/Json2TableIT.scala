@@ -22,14 +22,27 @@ class Json2TableIT extends FlatSpec with LocalSpark with MustMatchers{
 
 
   it should "transform checkin data to tables without loss of rows" in {
-    val businessInputFile = getClass.getResource("/checkin.json").getFile
+    val inputFile = getClass.getResource("/checkin.json").getFile
     val outputPath = getClass.getResource("/").getFile + "output"
 
-    Json2Table.transformCheckinToTables(businessInputFile,outputPath)
+    Json2Table.transformCheckinToTables(inputFile,outputPath)
     spark.read.parquet(outputPath + "/checkinAsTable").count() must be (40)
     spark.read.parquet(outputPath + "/checkinAsTable").select("business_id").distinct()count() must be (40)
 
     spark.read.parquet(outputPath + "/checkinTimes").select("business_id").distinct()count()  must be (40)
   }
+
+  it should "transform user data to tables without loss of rows" in {
+    val inputFile = getClass.getResource("/user.json").getFile
+    val outputPath = getClass.getResource("/").getFile + "output"
+
+    Json2Table.transformUserintoTables(inputFile,outputPath)
+    spark.read.parquet(outputPath + "/userAsTable").count() must be (5)
+    spark.read.parquet(outputPath + "/userAsTable").select("user_id").distinct()count() must be (5)
+
+    spark.read.parquet(outputPath + "/userElite").select("user_id").distinct()count()  must be (5)
+    spark.read.parquet(outputPath + "/userFriends").select("user_id").distinct()count()  must be (5)
+  }
+
 
 }

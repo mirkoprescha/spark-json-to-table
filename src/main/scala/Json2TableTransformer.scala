@@ -77,5 +77,22 @@ class Json2TableTransformer {
     return ds
   }
 
+  /*
+    USER
+   */
 
+  def userFriends(user:Dataset[User])(implicit spark:SparkSession) : Dataset[UserFriends] = {
+    import spark.implicits._
+    val ds = user
+      .select($"user_id".as[String], $"friends".as[Array[String]])
+      .withColumn("friend", org.apache.spark.sql.functions.explode(user.col("friends"))).drop("friends").as[UserFriends]
+    return ds
+  }
+  def userElite(user:Dataset[User])(implicit spark:SparkSession) : Dataset[UserElite] = {
+    import spark.implicits._
+    val ds = user
+      .select($"user_id".as[String], $"elite".as[Array[String]])
+      .withColumn("elite", org.apache.spark.sql.functions.explode(user.col("elite"))).as[UserElite]
+    return ds
+  }
 }

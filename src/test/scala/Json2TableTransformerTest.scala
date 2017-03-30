@@ -57,6 +57,32 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
     )
   ))
 
+  val testUser = User(
+    user_id=  "1",
+    name=  "name",
+    review_count=  1,
+    yelping_since=  "2017",
+    friends=  Array("friend1","friend2"),
+    useful=  3,
+    funny=  4,
+    cool=  1,
+    fans=  2.2,
+    elite=  Array("elite1"),
+    average_stars=  1,
+    compliment_hot=  2.2,
+    compliment_more=  3,
+    compliment_profile=  4,
+    compliment_cute=  5,
+    compliment_list=  6,
+    compliment_note=  7,
+    compliment_plain=  8,
+    compliment_cool=  9,
+    compliment_funny=  10,
+    compliment_writer=  11,
+    compliment_photos=  12,
+    `type`=  "myType"
+  )
+
 
   "Arrays of Business Class " must   "be converted in comma separated String" in {
     println ("schema of business raw data based on json:")
@@ -186,5 +212,25 @@ class Json2TableTransformerTest extends FlatSpec with MustMatchers with LocalSpa
     underTest.head(5)(1) must be (CheckinTimes("1","Tue-21:1"))
     underTest.head(5)(2) must be (CheckinTimes("1","Wed-0:1"))
 
+  }
+
+  /*
+  UserEntities Tests
+   */
+  "Values of friends-Array in User Class " must   "be exploded into several rows" in {
+    val userDS = spark.createDataset(List(testUser))
+    val underTest = new Json2TableTransformer().userFriends(userDS).sort($"user_id", $"friend")
+    underTest.show(false)
+    underTest.count() must be(2)
+    underTest.head(5)(0) must be(UserFriends("1", "friend1"))
+    underTest.head(5)(1) must be(UserFriends("1", "friend2"))
+  }
+
+  "Values of elite-Array in User Class " must   "be exploded into several rows" in {
+    val userDS = spark.createDataset(List(testUser))
+    val underTest = new Json2TableTransformer().userElite(userDS).sort($"user_id", $"elite")
+    underTest.show(false)
+    underTest.count() must be(1)
+    underTest.head(5)(0) must be(UserElite("1", "elite1"))
   }
 }
