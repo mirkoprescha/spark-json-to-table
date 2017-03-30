@@ -31,15 +31,17 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 # Zeppelin
 ENV ZEPPELIN_PORT 8080
-ENV ZEPPELIN_HOME /usr/zeppelin
 ENV ZEPPELIN_CONF_DIR $ZEPPELIN_HOME/conf
 ENV ZEPPELIN_NOTEBOOK_DIR $ZEPPELIN_HOME/notebook
 ENV ZEPPELIN_COMMIT v0.7.0
 RUN echo '{ "allow_root": true }' > /root/.bowerrc
+RUN mkdir /usr/zeppelin
 
+RUN curl -s http://mirrors.ae-online.de/apache/zeppelin/zeppelin-0.7.0/zeppelin-0.7.0-bin-all.tgz | tar -xz -C /usr/zeppelin
 
-RUN mkdir $ZEPPELIN_HOME
-RUN curl -s http://mirrors.ae-online.de/apache/zeppelin/zeppelin-0.7.0/zeppelin-0.7.0-bin-all.tgz | tar -xz -C $ZEPPELIN_HOME
+ENV ZEPPELIN_HOME /usr/zeppelin/zeppelin-0.7.0-bin-all
+RUN mkdir -p $ZEPPELIN_HOME
+
 CMD ["$ZEPPELIN_HOME/bin/zeppelin-daemon.sh start"]
 
 #Spark 2.1 for Hadoop2.6
@@ -53,7 +55,7 @@ RUN curl -s ${SPARK_ARCHIVE} | tar -xz -C /usr/local/
 WORKDIR $SPARK_HOME
 
 # Copy App
-COPY bin/spark-json-to-table_2.11-1.0.jar /etc/bootstrap.sh
+COPY bin/spark-json-to-table_2.11-1.0.jar /usr/local/bin/spark-json-to-table_2.11-1.0.jar
 
 
 #RUN curl -s http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.6.tgz | tar -xz -C /usr/local/
