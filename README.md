@@ -23,14 +23,55 @@ This Spark-App subsequently reads all json files into a dataframe, validates the
 ## Getting Started
 
 1. Clone this project.
-2. download tar file from [Yelp Dataset Challenge round#9](https://www.yelp.com/dataset_challenge).
-3. build package with sbt 
-4. 
+3. build package with sbt
 
-## Requirements
+2. download tar file from [Yelp Dataset Challenge round#9](https://www.yelp.com/dataset_challenge) (it is 1.8 GB large)
+
+6. start docker container
+
+```
+cd spark-docker
+docker run -it -p 8080:8080   mirkoprescha/spark-zeppelin
+```
+If you want to use zeppelin immediately, wait roughly 10 second until daemon started
+
+5. Copy tar to docker container (your latest started container)
+```
+docker cp yelp_dataset_challenge_round9.tgz $(docker ps  -l -q):/home/
+```
+
+5.
+```
+spark-submit   --class com.mprescha.json2Table.Json2Table \
+      /usr/local/bin/spark-json-to-table_2.11-1.0.jar \
+      /home/yelp_dataset_challenge_round9.tgz
+```
+
+Spark processing will take roughly 5 minutes.
+
+If the job ran successful, following output-structure is generated in /home/output/.
+- businessAsTable
+- businessAttributes
+- businessCategories
+- businessHours
+- checkinAsTable
+- checkinTimes
+- review
+- tip
+- userAsTable
+- userElite
+- userFriends
+
+Each subdir represents an entity-type that can be analyzed in zeppelin notebook.
+
+6. goto zeppelin ui: http://localhost:8080/#/
+
+
+## works with
 - spark 2.1
 - scala 2.17
 - sbt
+- docker 1.13.1
  
  
 ## Running the tests
@@ -38,6 +79,14 @@ This Spark-App subsequently reads all json files into a dataframe, validates the
 ```
 sbt test
 ```
+
+## build jar
+
+```
+sbt package
+```
+
+
 
 ## Built With
 
