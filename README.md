@@ -19,12 +19,13 @@ It utilizes the json files provided by [Yelp Dataset Challenge round#9](https://
 
 ### Spark-App
 This Spark-App subsequently reads all json files into a dataframe, validates the schema with help of case classes, explodes all arrays into additional tables and writes remaining attributes into the parent table.
-The parent table furthermore contains the array values as comma-separated string (might helpful for certain usecases).
+The parent table furthermore contains the array values as comma-separated string (helpful for some analyses to avoid joining).
 Spark-App is written in `Scala` and build with `SBT`. It utilizes `scalatest` for unit and integration test.
 Find the sources are in `./src`.
 
 ### Spark-Zeppelin Docker Image
 To test the Spark-App with spark-submit this project also provides Spark 2.1 together with Zeppelin as docker image.
+The docker image is uploaded in [dockerhub](https://hub.docker.com/r/mirkoprescha/spark-zeppelin/) in a public repository.
 A sample zeppelin notebook to analyze exploded tables is here `./zeppelin_notebooks/dataset-analysis.json.`
 
 
@@ -41,18 +42,18 @@ Follow these steps to use compiled spark-app in provided docker image.
 
 
 
-1. download tar file from [Yelp Dataset Challenge round#9](https://www.yelp.com/dataset_challenge) and place it in project dir
+1. download tar file from [Yelp Dataset Challenge round#9](https://www.yelp.com/dataset_challenge)
 
 
 2. run docker container
 
 it will download image from dockerhub and run it in a container
 ```
-docker run -it -p 8080:8080   mirkoprescha/spark-zeppelin
+docker run -it -p 8088:8080   mirkoprescha/spark-zeppelin
 ```
 If you want to use zeppelin immediately, wait roughly 10 second until daemon started
 
-3. Copy dataset challenge tar to docker container
+3. Copy yelp_dataset_challenge_round9.tgz to docker container
 
 Start another shell session and copy the file into the docker container.
 (your latest started container)
@@ -107,9 +108,10 @@ root@c6c0a39bc1fa:/home# du -h output/
 3.3G	output/
 ```
 
-5. goto zeppelin ui: http://localhost:8080/#/
+5. goto zeppelin ui: http://localhost:8088/#/
 
 Open the Notebook called `analysis`.
+Accept ("save") the interpreter bindings.
 In the menu bar click to *play* button to run all paragraphs.
 
 
