@@ -23,7 +23,9 @@ The parent table furthermore contains the array values as comma-separated string
 Spark-App is written in `Scala` and build with `SBT`. It utilizes `scalatest` for unit and integration test.
 Find the sources are in `./src`.
 
-### Docker
+### Spark-Zeppelin Docker Image
+To test the Spark-App with spark-submit this project also provides Spark 2.1 together with Zeppelin as docker image.
+A sample zeppelin notebook to analyze exploded tables is here `./zeppelin_notebooks/dataset-analysis.json.`
 
 
 ## Works with
@@ -43,6 +45,8 @@ Follow these steps to use compiled spark-app in provided docker image.
 
 
 2. run docker container
+
+it will download image from dockerhub and run it in a container
 ```
 docker run -it -p 8080:8080   mirkoprescha/spark-zeppelin
 ```
