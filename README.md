@@ -114,6 +114,8 @@ Open the Notebook called `analysis`.
 Accept ("save") the interpreter bindings.
 In the menu bar click to *play* button to run all paragraphs.
 
+if the notebook is not available you have to download it from this git repo and import into zeppelin.
+Alternatively check the results of the notebook in [zeppelin hub](https://www.zeppelinhub.com/viewer/notebooks/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL21pcmtvcHJlc2NoYS9zcGFyay1qc29uLXRvLXRhYmxlL21hc3Rlci96ZXBwZWxpbl9ub3RlYm9va3MvZGF0YXNldC1hbmFseXNpcy5qc29u)
 
 
 ## deploy changes in spark-app
