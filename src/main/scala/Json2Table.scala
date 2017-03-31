@@ -23,8 +23,8 @@ object Json2Table {
     println (s"reading tar from $fullPathToTar")
     unzipTarFile(fullPathToTar)
 
-    val spark = SparkSession.builder().master("local[4]").appName(s"json2table").getOrCreate()
-//    val spark = SparkSession.builder().appName(s"json2table").getOrCreate()  //if provided
+//    val spark = SparkSession.builder().master("local[4]").appName(s"json2table").getOrCreate()
+    val spark = SparkSession.builder().appName(s"json2table").getOrCreate()  //if provided
 
 
     transformBusinessToTables(inputFiles.get("business").get,"./output")(spark)
@@ -40,11 +40,7 @@ object Json2Table {
 
   def unzipTarFile (inputFilename: String) = {
     println(s"unzip tar file $inputFilename")
-    val result: Int = "ls -al" !
-//    println (result.toString)
-    val result2: Int = s"tar xopf $inputFilename" !
-    // println (s"result $result2")
-
+    val result: Int = s"tar xopf $inputFilename" !
 
   }
 
