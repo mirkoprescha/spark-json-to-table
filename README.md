@@ -1,13 +1,13 @@
 # spark-json-to-parquet-table
 
-This project demonstrates how to explode json-arrays into a relation format using *spark*.
+This project demonstrates how to explode json-arrays into a relational format using *spark*.
 
 Example:
 
-This source Json:
+This source JSON object:
  `{"business_id":"1","categories":["Tobacco Shops","Nightlife","Vape Shops"],"price":100} `
  
-will be converted into such a table.
+will be converted into such a table in parquet format.
  
 | business_id   | categorie      | price  |
 | ------------- |:--------------:| -----:|
@@ -15,16 +15,18 @@ will be converted into such a table.
 | 1             | Nightlife      | 100 |
 | 1             | Vape Shop      | 100 |
 
-It utilizes the json files provided by [Yelp Dataset Challenge round#9](https://www.yelp.com/dataset_challenge).
+As source file input it utilizes the json files provided by [Yelp Dataset Challenge round#9](https://www.yelp.com/dataset_challenge).
+
+This project consists of a spark-app doing the transformation and a docker image providing the required software and libraries to run the spark-app.
 
 ### Spark-App
-This Spark-App subsequently reads all json files into a dataframe, validates the schema with help of case classes, explodes all arrays into additional tables and writes remaining attributes into the parent table.
+The Spark-App reads all json files one after another into a dataframe, validates the schema with help of case classes, explodes all arrays into additional dataset and leads through all remaining attributes into the parent table. All generated datasets are persisted as parquet.
 The parent table furthermore contains the array values as comma-separated string (helpful for some analyses to avoid joining).
 Spark-App is written in `Scala` and build with `SBT`. It utilizes `scalatest` for unit and integration test.
 Find the sources are in `./src`.
 
 ### Spark-Zeppelin Docker Image
-To test the Spark-App with spark-submit this project also provides Spark 2.1 together with Zeppelin as docker image.
+To run the Spark-App with spark-submit this project also provides Spark 2.1 together with Zeppelin as docker image.
 The docker image is uploaded in [dockerhub](https://hub.docker.com/r/mirkoprescha/spark-zeppelin/) in a public repository.
 A sample zeppelin notebook to analyze exploded tables is here `./zeppelin_notebooks/dataset-analysis.json.`
 
@@ -38,11 +40,11 @@ A sample zeppelin notebook to analyze exploded tables is here `./zeppelin_notebo
 
 ## Getting Started
 
+To get this project running you need at least 10 GB available harddisk.
 Follow these steps to use compiled spark-app in provided docker image.
 
 
-
-1. download tar file from [Yelp Dataset Challenge round#9](https://www.yelp.com/dataset_challenge)
+1. download tar file from [Yelp Dataset Challenge round#9](https://www.yelp.com/dataset_challenge) containing input json files
 
 
 2. run docker container
