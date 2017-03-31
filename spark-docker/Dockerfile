@@ -91,7 +91,7 @@ WORKDIR $SPARK_HOME
 # Copy App
 COPY spark-docker/bin/spark-json-to-table_2.11-1.0.jar /usr/local/bin/spark-json-to-table_2.11-1.0.jar
 
-ADD  zeppelin_notebooks/dataset-analysis.json $ZEPPELIN_NOTEBOOK_DIR/
+ADD  zeppelin_notebooks/dataset-analysis.json $ZEPPELIN_NOTEBOOK_DIR/2CE95BHSP/note.json
 
 WORKDIR /home
 ENTRYPOINT  $ZEPPELIN_HOME/bin/zeppelin-daemon.sh start  && bash
