@@ -24,7 +24,7 @@ object Json2Table {
     unzipTarFile(fullPathToTar)
 
 //    val spark = SparkSession.builder().master("local[4]").appName(s"json2table").getOrCreate()
-    val spark = SparkSession.builder().appName(s"json2table").getOrCreate()  //if provided
+    val spark = SparkSession.builder().appName("json2table").getOrCreate()  //if provided
 
 
     transformBusinessToTables(inputFiles.get("business").get,"./output")(spark)
